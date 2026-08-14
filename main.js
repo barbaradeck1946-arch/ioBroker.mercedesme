@@ -364,20 +364,21 @@ class Mercedesme extends utils.Adapter {
               this.log.error("Error getting user infos");
             });
 
-            // Check connection mode: WebSocket realtime (optional) or API polling (default)
+            // Check connection mode: WebSocket realtime (default) or API polling
             const interval = parseInt(this.config.pollingInterval) || 5;
-            if (this.config.realtimeWebSocket) {
+            if (this.config.enableWebSocket) {
               this.pollingMode = false;
-              const reconnectDelay = parseInt(this.config.wsReconnectDelay) || 10;
-              this.log.info("WebSocket realtime mode enabled - faster updates but may hit rate limits");
-              // Mercedes closes the WS ~every 15 min and blocks the account (HTTP 429) after
-              // ~66 reconnects/day. Warn if the configured delay cannot stay under that limit.
+              const reconnectDelay = parseInt(this.config.wsReconnectDelay) || 300;
+              this.log.info("WebSocket realtime mode enabled - faster updates");
+              // Mercedes closes the WS ~every 15 min. A very low reconnect delay means
+              // many reconnects/day and risks an HTTP 429 block. A 429 is auto-recovered
+              // via relogin, but warn on aggressive settings so users raise the delay.
               const reconnectsPerDay = Math.floor((24 * 60 * 60) / (15 * 60 + reconnectDelay));
-              if (reconnectsPerDay > 60) {
+              if (reconnectsPerDay > 80) {
                 this.log.warn(
                   `WebSocket reconnect delay is ${reconnectDelay}s -> ~${reconnectsPerDay} reconnects/day, ` +
                     `which risks an HTTP 429 account block. Increase 'WebSocket Reconnect-Verzögerung' ` +
-                    `(e.g. 300s) or use polling mode to stay under the daily limit.`,
+                    `(default 300s) to stay under the daily limit.`,
                 );
               }
               this.connectWS();
@@ -2010,10 +2011,10 @@ class Mercedesme extends utils.Adapter {
       return;
     }
 
-    // Reconnect delay in seconds (configurable). Mercedes closes the WS with 1001
-    // roughly every 15 min; a low delay means ~66 reconnects/day -> HTTP 429 block.
-    // Raise wsReconnectDelay to reduce daily reconnects and avoid the rate limit.
-    const delay = parseInt(this.config.wsReconnectDelay) || 10;
+    // Reconnect delay in seconds (configurable, default 300). Mercedes closes the WS
+    // with 1001 roughly every 15 min; a low delay means many reconnects/day -> HTTP 429.
+    // A 429 is auto-recovered via relogin, but a higher delay avoids hitting it.
+    const delay = parseInt(this.config.wsReconnectDelay) || 300;
     this.log.info(`Scheduling reconnect in ${delay}s (reason: ${reason || "unknown"})`);
     setTimeout(() => {
       this.connectWS();

@@ -186,8 +186,8 @@
     "ciam": "",
     "resetAccess": false,
     "pollingInterval": 5,
-    "realtimeWebSocket": false,
-    "wsReconnectDelay": 10,
+    "enableWebSocket": true,
+    "wsReconnectDelay": 300,
     "wsBlockedReconnectInterval": 30
   },
   "protectedNative": ["password", "pin", "apiKey"],

@@ -105,8 +105,8 @@
           <label for="pollingInterval" class="translate">Polling Intervall (Minuten)</label>
         </div>
         <div class="col s4">
-          <input class="value" id="realtimeWebSocket" type="checkbox" />
-          <label class="translate" for="realtimeWebSocket">WebSocket Echtzeit-Modus (schnellere Updates, kann aber 429 Rate Limit verursachen und Remote Befehle blockieren)</label>
+          <input class="value" id="enableWebSocket" type="checkbox" />
+          <label class="translate" for="enableWebSocket">WebSocket Echtzeit-Modus (schnellere Updates; bei 429-Sperre automatischer Relogin, danach REST-Fallback)</label>
         </div>
       </div>
       <div class="row">
