@@ -187,7 +187,7 @@
     "resetAccess": false,
     "pollingInterval": 5,
     "enableWebSocket": true,
-    "wsReconnectDelay": 300,
+    "wsReconnectDelay": 120,
     "wsBlockedReconnectInterval": 30
   },
   "protectedNative": ["password", "pin", "apiKey"],
